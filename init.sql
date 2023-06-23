@@ -1,3 +1,6 @@
+-- buat database
+create database bank;
+
 -- install uuid module
 create extension if not exists "uuid-ossp";
 
