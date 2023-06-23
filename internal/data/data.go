@@ -23,3 +23,9 @@ type Transaksi struct {
 	KodeTransaksi string    `json:"kode_transaksi"`
 	Nominal       int       `json:"nominal"`
 }
+
+type Mutasi struct {
+	KodeTransaksi string `db:"kode_transaksi" json:"kode_transaksi"`
+	Nominal       string `db:"nominal" json:"nominal"`
+	Waktu         string `db:"waktu_transaksi" json:"waktu_transaksi"`
+}

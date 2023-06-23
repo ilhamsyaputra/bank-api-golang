@@ -173,3 +173,32 @@ func (h *BankHandler) GetSaldo(c *fiber.Ctx) error {
 		},
 	)
 }
+
+func (h *BankHandler) GetMutasi(c *fiber.Ctx) error {
+	no_rekening := c.Params("no_rekening")
+
+	mutasi, err := h.service.GetMutasi(no_rekening)
+	if err != nil && err.Error() == "INVALID" {
+		return c.Status(400).JSON(
+			fiber.Map{
+				"status": "error",
+				"remark": "Tidak mendapatkan data mutasi. Nomor rekening tidak valid.",
+			},
+		)
+	}
+	if err != nil {
+		return c.Status(500).JSON(
+			fiber.Map{
+				"status":  "error",
+				"message": err,
+			},
+		)
+	}
+
+	return c.Status(201).JSON(
+		fiber.Map{
+			"status": "success",
+			"data":   mutasi,
+		},
+	)
+}

@@ -12,6 +12,7 @@ type BankServicePort interface {
 	Tabung(requestPayload data.TrxRequest) (saldo int, err error)
 	Tarik(requestPayload data.TrxRequest) (saldo int, err error)
 	GetSaldo(no_rekening string) (saldo int, err error)
+	GetMutasi(no_rekening string) (response []data.Mutasi, err error)
 }
 
 type BankRepositoryPort interface {
@@ -26,6 +27,7 @@ type BankRepositoryPort interface {
 	AddSaldoByRekening(tx *sqlx.Tx, request data.TrxRequest) (err error)
 	AddMutasiTransaksi(tx *sqlx.Tx, requestPayload data.Transaksi) (err error)
 	SubstractSaldoByRekening(tx *sqlx.Tx, request data.TrxRequest) (err error)
+	GetMutasiByRekening(tx *sqlx.Tx, no_rekening string) (response []data.Mutasi, err error)
 }
 
 type BankHandlersPort interface {
@@ -33,4 +35,5 @@ type BankHandlersPort interface {
 	Tabung(c *fiber.Ctx) error
 	Tarik(c *fiber.Ctx) error
 	GetSaldo(c *fiber.Ctx) error
+	GetMutasi(c *fiber.Ctx) error
 }

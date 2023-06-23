@@ -30,3 +30,26 @@ func (b *BankRepository) AddMutasiTransaksi(tx *sqlx.Tx, data data.Transaksi) (e
 
 	return
 }
+
+func (b *BankRepository) GetMutasiByRekening(tx *sqlx.Tx, no_rekening string) (response []data.Mutasi, err error) {
+	b.log.Info(
+		logrus.Fields{}, nil, "Execute: BankRepository.GetMutasiByRekening started",
+	)
+
+	params := map[string]interface{}{
+		"no_rekening": no_rekening,
+	}
+
+	query := "select kode_transaksi, nominal, waktu_transaksi from transaksi where no_rekening = :no_rekening"
+
+	nstmt, err := tx.PrepareNamed(query)
+	if err != nil {
+		return
+	}
+
+	err = nstmt.Select(&response, params)
+	if err != nil {
+		return
+	}
+	return
+}
