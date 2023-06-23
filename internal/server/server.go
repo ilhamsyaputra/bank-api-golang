@@ -18,10 +18,11 @@ func InitServer(handlers ports.BankHandlersPort) *Server {
 
 func (s *Server) Start() {
 	app := fiber.New()
-	
+
 	routes := app.Group("/v1")
 
 	routes.Post("/daftar", s.bankHandler.Register)
+	routes.Put("/tabung", s.bankHandler.Tabung)
 
 	err := app.Listen(":2525")
 	if err != nil {

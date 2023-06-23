@@ -13,12 +13,12 @@ func (b *BankRepository) IsNasabahExist(tx *sqlx.Tx, requestPayload data.Registe
 	)
 
 	params := map[string]interface{}{
-		"nik":  requestPayload.Nik,
+		"nik":   requestPayload.Nik,
 		"no_hp": requestPayload.Nohp,
 	}
 
 	query := "SELECT COUNT(*) FROM nasabah WHERE nik = :nik OR no_hp = :no_hp"
-	
+
 	var count int
 	prepareQuery, err := tx.PrepareNamed(query)
 	if err != nil {
@@ -29,13 +29,11 @@ func (b *BankRepository) IsNasabahExist(tx *sqlx.Tx, requestPayload data.Registe
 	if err != nil {
 		return false, err
 	}
-	
+
 	if count > 0 {
 		return true, nil
 	}
 	return false, nil
-
-
 }
 
 func (b *BankRepository) RegisterNasabah(tx *sqlx.Tx, requestPayload data.RegisterRequest) (no_nasabah int, err error) {
@@ -44,8 +42,8 @@ func (b *BankRepository) RegisterNasabah(tx *sqlx.Tx, requestPayload data.Regist
 	)
 
 	params := map[string]interface{}{
-		"nama": requestPayload.Nama,
-		"nik":  requestPayload.Nik,
+		"nama":  requestPayload.Nama,
+		"nik":   requestPayload.Nik,
 		"no_hp": requestPayload.Nohp,
 	}
 
@@ -58,7 +56,6 @@ func (b *BankRepository) RegisterNasabah(tx *sqlx.Tx, requestPayload data.Regist
 	}
 	// -- END insert to DB
 
-	
 	err = tx.QueryRow("SELECT last_value FROM nasabah_no_nasabah_seq").Scan(&no_nasabah)
 	if err != nil {
 		return 0, err
@@ -66,4 +63,3 @@ func (b *BankRepository) RegisterNasabah(tx *sqlx.Tx, requestPayload data.Regist
 
 	return
 }
-

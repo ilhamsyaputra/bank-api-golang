@@ -9,3 +9,8 @@ type RegisterRequest struct {
 type RegisterResponse struct {
 	NoRekening string `json:"no_rekening"`
 }
+
+type TabungRequest struct {
+	NoRekening string `json:"no_rekening"`
+	Nominal    int    `json:"nominal"`
+}

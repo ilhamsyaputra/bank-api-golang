@@ -1,8 +1,8 @@
 package repositories
 
 import (
+	"bank-api/internal/data"
 	"bank-api/pkg/utils"
-	"fmt"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/sirupsen/logrus"
@@ -27,15 +27,63 @@ func (b *BankRepository) RegisterRekening(tx *sqlx.Tx, no_nasabah int) (no_reken
 	if err != nil {
 		return "", err
 	}
-
-	// err = tx.Commit()
-	// if err != nil {
-	// 	b.log.Error(
-	// 		logrus.Fields{"error": err.Error()}, nil, "failed to commit transaction",
-	// 	)
-	// }
 	// -- END insert to DB
-	fmt.Println(no_rekening)
+
+	return
+}
+
+func (b *BankRepository) IsRekeningValid(tx *sqlx.Tx, requestPayload data.TabungRequest) (valid bool, err error) {
+	b.log.Info(
+		logrus.Fields{}, nil, "Execute: IsRekeningValid started",
+	)
+
+	params := map[string]interface{}{
+		"no_rekening": requestPayload.NoRekening,
+	}
+
+	query := "SELECT COUNT(*) FROM rekening WHERE no_rekening = :no_rekening"
+
+	var count int
+	prepareQuery, err := tx.PrepareNamed(query)
+	if err != nil {
+		return false, err
+	}
+
+	err = prepareQuery.Get(&count, params)
+	if err != nil {
+		return false, err
+	}
+
+	if count == 0 {
+		return false, nil
+	}
+	return true, nil
+}
+
+func (b *BankRepository) GetSaldoByRekening(tx *sqlx.Tx, no_rekening string) (saldo int, err error) {
+	b.log.Info(
+		logrus.Fields{}, nil, "Execute: BankRepository.GetSaldoByRekening started",
+	)
+
+	query := "select saldo from rekening where no_rekening = $1"
+
+	err = tx.Get(&saldo, query, no_rekening)
+	return
+}
+
+func (b *BankRepository) AddSaldoByRekening(tx *sqlx.Tx, request data.TabungRequest) (err error) {
+	b.log.Info(
+		logrus.Fields{}, nil, "Execute: BankRepository.GetSaldoByRekening started",
+	)
+
+	params := map[string]interface{}{
+		"no_rekening": request.NoRekening,
+		"nominal":     request.Nominal,
+	}
+
+	query := "update rekening set saldo = :nominal where no_rekening = :no_rekening"
+
+	_, err = tx.NamedExec(query, params)
 
 	return
 }
