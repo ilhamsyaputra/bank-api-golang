@@ -32,7 +32,7 @@ func (b *BankRepository) RegisterRekening(tx *sqlx.Tx, no_nasabah int) (no_reken
 	return
 }
 
-func (b *BankRepository) IsRekeningValid(tx *sqlx.Tx, requestPayload data.TabungRequest) (valid bool, err error) {
+func (b *BankRepository) IsRekeningValid(tx *sqlx.Tx, requestPayload data.TrxRequest) (valid bool, err error) {
 	b.log.Info(
 		logrus.Fields{}, nil, "Execute: IsRekeningValid started",
 	)
@@ -71,9 +71,26 @@ func (b *BankRepository) GetSaldoByRekening(tx *sqlx.Tx, no_rekening string) (sa
 	return
 }
 
-func (b *BankRepository) AddSaldoByRekening(tx *sqlx.Tx, request data.TabungRequest) (err error) {
+func (b *BankRepository) AddSaldoByRekening(tx *sqlx.Tx, request data.TrxRequest) (err error) {
 	b.log.Info(
 		logrus.Fields{}, nil, "Execute: BankRepository.GetSaldoByRekening started",
+	)
+
+	params := map[string]interface{}{
+		"no_rekening": request.NoRekening,
+		"nominal":     request.Nominal,
+	}
+
+	query := "update rekening set saldo = :nominal where no_rekening = :no_rekening"
+
+	_, err = tx.NamedExec(query, params)
+
+	return
+}
+
+func (b *BankRepository) SubstractSaldoByRekening(tx *sqlx.Tx, request data.TrxRequest) (err error) {
+	b.log.Info(
+		logrus.Fields{}, nil, "Execute: BankRepository.SubstractSaldoByRekening started",
 	)
 
 	params := map[string]interface{}{

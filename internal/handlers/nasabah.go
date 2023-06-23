@@ -54,7 +54,7 @@ func (h *BankHandler) Register(c *fiber.Ctx) error {
 }
 
 func (h *BankHandler) Tabung(c *fiber.Ctx) error {
-	var requestPayload data.TabungRequest
+	var requestPayload data.TrxRequest
 
 	err := c.BodyParser(&requestPayload)
 	if err != nil {
@@ -76,6 +76,51 @@ func (h *BankHandler) Tabung(c *fiber.Ctx) error {
 			fiber.Map{
 				"status": "error",
 				"remark": "Tidak dapat melakukan transaksi tabung. Nomor rekening tidak valid.",
+			},
+		)
+	}
+	if err != nil {
+		return c.Status(500).JSON(
+			fiber.Map{
+				"status":  "error",
+				"message": err,
+			},
+		)
+	}
+
+	return c.Status(201).JSON(
+		fiber.Map{
+			"status": "success",
+			"data": fiber.Map{
+				"saldo": saldo,
+			},
+		},
+	)
+}
+
+func (h *BankHandler) Tarik(c *fiber.Ctx) error {
+	var requestPayload data.TrxRequest
+
+	err := c.BodyParser(&requestPayload)
+	if err != nil {
+		log.WithFields(log.Fields{
+			"error": err,
+		}).Error("ERROR OCCURED")
+
+		return c.Status(500).JSON(
+			fiber.Map{
+				"status":  "error",
+				"message": err,
+			},
+		)
+	}
+
+	saldo, err := h.service.Tarik(requestPayload)
+	if err != nil && err.Error() == "INVALID" {
+		return c.Status(400).JSON(
+			fiber.Map{
+				"status": "error",
+				"remark": "Tidak dapat melakukan transaksi tarik. Nomor rekening tidak valid.",
 			},
 		)
 	}

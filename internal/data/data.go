@@ -12,7 +12,7 @@ type RegisterResponse struct {
 	NoRekening string `json:"no_rekening"`
 }
 
-type TabungRequest struct {
+type TrxRequest struct {
 	NoRekening string `json:"no_rekening"`
 	Nominal    int    `json:"nominal"`
 }
