@@ -88,7 +88,7 @@ func (h *BankHandler) Tabung(c *fiber.Ctx) error {
 		)
 	}
 
-	return c.Status(201).JSON(
+	return c.Status(200).JSON(
 		fiber.Map{
 			"status": "success",
 			"data": fiber.Map{
@@ -133,7 +133,7 @@ func (h *BankHandler) Tarik(c *fiber.Ctx) error {
 		)
 	}
 
-	return c.Status(201).JSON(
+	return c.Status(200).JSON(
 		fiber.Map{
 			"status": "success",
 			"data": fiber.Map{
@@ -164,7 +164,7 @@ func (h *BankHandler) GetSaldo(c *fiber.Ctx) error {
 		)
 	}
 
-	return c.Status(201).JSON(
+	return c.Status(200).JSON(
 		fiber.Map{
 			"status": "success",
 			"data": fiber.Map{
@@ -195,7 +195,7 @@ func (h *BankHandler) GetMutasi(c *fiber.Ctx) error {
 		)
 	}
 
-	return c.Status(201).JSON(
+	return c.Status(200).JSON(
 		fiber.Map{
 			"status": "success",
 			"data":   mutasi,
