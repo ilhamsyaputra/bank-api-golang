@@ -1,4 +1,4 @@
-# REST API Bank dengan FastAPI
+# REST API Bank dengan gofiber
 
 Repository ini adalah sebuah REST API sistem bank simpel yang dibuat dengan menggunakan Golang.
 
