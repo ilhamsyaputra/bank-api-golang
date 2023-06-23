@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/sirupsen/logrus"
 )
 
@@ -66,6 +67,8 @@ func (s *BankService) Tabung(requestPayload data.TabungRequest) (saldo int, err 
 		return
 	}
 
+	nominal := requestPayload.Nominal
+
 	// check isRekeningValid by no_rekening
 	isRekeningValid, err := s.repository.IsRekeningValid(tx, requestPayload)
 	if err != nil {
@@ -90,6 +93,19 @@ func (s *BankService) Tabung(requestPayload data.TabungRequest) (saldo int, err 
 	// update saldo rekening
 	requestPayload.Nominal += saldoRekening
 	err = s.repository.AddSaldoByRekening(tx, requestPayload)
+	if err != nil {
+		s.log.Warn(logrus.Fields{}, nil, err.Error())
+		s.repository.Rollback(tx)
+		return
+	}
+
+	// catat mutasi
+	var transaksi data.Transaksi
+	transaksi.Id = uuid.New()
+	transaksi.NoRekening = requestPayload.NoRekening
+	transaksi.KodeTransaksi = "D"
+	transaksi.Nominal = nominal
+	err = s.repository.AddMutasiTransaksi(tx, transaksi)
 	if err != nil {
 		s.log.Warn(logrus.Fields{}, nil, err.Error())
 		s.repository.Rollback(tx)

@@ -22,6 +22,7 @@ type BankRepositoryPort interface {
 	RegisterRekening(tx *sqlx.Tx, no_nasabah int) (no_rekening string, err error)
 	GetSaldoByRekening(tx *sqlx.Tx, no_rekening string) (saldo int, err error)
 	AddSaldoByRekening(tx *sqlx.Tx, request data.TabungRequest) (err error)
+	AddMutasiTransaksi(tx *sqlx.Tx, requestPayload data.Transaksi) (err error)
 }
 
 type BankHandlersPort interface {
