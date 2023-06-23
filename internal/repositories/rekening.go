@@ -32,13 +32,13 @@ func (b *BankRepository) RegisterRekening(tx *sqlx.Tx, no_nasabah int) (no_reken
 	return
 }
 
-func (b *BankRepository) IsRekeningValid(tx *sqlx.Tx, requestPayload data.TrxRequest) (valid bool, err error) {
+func (b *BankRepository) IsRekeningValid(tx *sqlx.Tx, no_rekening string) (valid bool, err error) {
 	b.log.Info(
 		logrus.Fields{}, nil, "Execute: IsRekeningValid started",
 	)
 
 	params := map[string]interface{}{
-		"no_rekening": requestPayload.NoRekening,
+		"no_rekening": no_rekening,
 	}
 
 	query := "SELECT COUNT(*) FROM rekening WHERE no_rekening = :no_rekening"

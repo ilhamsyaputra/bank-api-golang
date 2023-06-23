@@ -24,6 +24,7 @@ func (s *Server) Start() {
 	routes.Post("/daftar", s.bankHandler.Register)
 	routes.Put("/tabung", s.bankHandler.Tabung)
 	routes.Put("/tarik", s.bankHandler.Tarik)
+	routes.Get("/saldo/:no_rekening", s.bankHandler.GetSaldo)
 
 	err := app.Listen(":2525")
 	if err != nil {

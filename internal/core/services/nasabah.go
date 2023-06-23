@@ -70,7 +70,7 @@ func (s *BankService) Tabung(requestPayload data.TrxRequest) (saldo int, err err
 	nominal := requestPayload.Nominal
 
 	// check isRekeningValid by no_rekening
-	isRekeningValid, err := s.repository.IsRekeningValid(tx, requestPayload)
+	isRekeningValid, err := s.repository.IsRekeningValid(tx, requestPayload.NoRekening)
 	if err != nil {
 		s.log.Warn(logrus.Fields{}, nil, err.Error())
 		s.repository.Rollback(tx)
@@ -151,7 +151,7 @@ func (s *BankService) Tarik(requestPayload data.TrxRequest) (saldo int, err erro
 	nominal := requestPayload.Nominal
 
 	// check isRekeningValid by no_rekening
-	isRekeningValid, err := s.repository.IsRekeningValid(tx, requestPayload)
+	isRekeningValid, err := s.repository.IsRekeningValid(tx, requestPayload.NoRekening)
 	if err != nil {
 		s.log.Warn(logrus.Fields{}, nil, err.Error())
 		s.repository.Rollback(tx)
@@ -195,6 +195,55 @@ func (s *BankService) Tarik(requestPayload data.TrxRequest) (saldo int, err erro
 
 	// get saldo terbaru
 	saldo, err = s.repository.GetSaldoByRekening(tx, requestPayload.NoRekening)
+	if err != nil {
+		s.log.Warn(logrus.Fields{}, nil, err.Error())
+		s.repository.Rollback(tx)
+		return
+	}
+
+	elapsedTime := time.Since(startTime)
+
+	if err != nil {
+		s.log.Warn(logrus.Fields{"elapsed_time": elapsedTime}, nil, err.Error())
+		s.repository.Rollback(tx)
+		return
+	}
+	s.log.Info(
+		logrus.Fields{"elapsed_time": elapsedTime}, nil, "Executed: BankRepository.Tarik with no error",
+	)
+
+	// Commit
+	s.repository.Commit(tx)
+
+	return
+}
+
+func (s *BankService) GetSaldo(no_rekening string) (saldo int, err error) {
+	startTime := time.Now()
+	// init transaction
+	tx, err := s.repository.Begin()
+	if err != nil {
+		err = fmt.Errorf("failed to begin transaction")
+		s.log.Warn(logrus.Fields{}, nil, err.Error())
+		s.repository.Rollback(tx)
+		return
+	}
+
+	// check isRekeningValid by no_rekening
+	isRekeningValid, err := s.repository.IsRekeningValid(tx, no_rekening)
+	if err != nil {
+		s.log.Warn(logrus.Fields{}, nil, err.Error())
+		s.repository.Rollback(tx)
+		return
+	}
+	if !isRekeningValid {
+		err = fmt.Errorf("INVALID")
+		s.log.Warn(logrus.Fields{}, nil, err.Error())
+		return 0, err
+	}
+
+	// get saldo rekening
+	saldo, err = s.repository.GetSaldoByRekening(tx, no_rekening)
 	if err != nil {
 		s.log.Warn(logrus.Fields{}, nil, err.Error())
 		s.repository.Rollback(tx)
